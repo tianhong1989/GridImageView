@@ -1,0 +1,11 @@
+
+/build
+
+/.gradle/
+/.idea/
+/gradle/
+/gradle.properties
+/gradlew
+/gradlew.bat
+/GridImageView.iml
+/local.properties
