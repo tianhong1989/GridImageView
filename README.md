@@ -11,7 +11,7 @@
 ## 用法
 
 <code><pre>
-compile 'com.wenen:gridimageview:1.0.1'
+compile 'com.wenen:gridimageview:1.0.2'
 </pre></code>
 
 Activity中设置图片：
