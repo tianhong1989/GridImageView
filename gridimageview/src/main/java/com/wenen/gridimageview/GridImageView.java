@@ -65,11 +65,11 @@ public class GridImageView extends RelativeLayout {
     } else if (widthMode == MeasureSpec.AT_MOST) {
       width = Math.min(screenWidth, widthSize);
     } else {
-      width = screenWidth;
+      width = widthSize;
     }
     if (heightMode == MeasureSpec.EXACTLY) {
       height = heightSize;
-    } else if (widthMode == MeasureSpec.AT_MOST) {
+    } else if (heightMode == MeasureSpec.AT_MOST) {
       height = Math.min(screenHeight, heightSize);
     } else {
       height = screenHeight;
@@ -77,7 +77,6 @@ public class GridImageView extends RelativeLayout {
     setMeasuredDimension(width, height);
     setImage();
   }
-
   @Override protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
   }
@@ -85,8 +84,7 @@ public class GridImageView extends RelativeLayout {
   private void setImage() {
     for (int i = 1; i <= imageViews.length; i++) {
       LayoutParams params =
-          new LayoutParams((width - 4 * margin) / rowcount,
-              (width - 4 * margin) / rowcount);
+          new LayoutParams((width - 4 * margin) / rowcount, (width - 4 * margin) / rowcount);
       params.setMargins(margin, margin, 0, 0);
       params.addRule(RelativeLayout.BELOW, i - rowcount);
       if ((i - 1) % rowcount == 0) {
