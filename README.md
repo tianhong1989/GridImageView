@@ -20,14 +20,16 @@ ImageView[] imageViews = relativeLayout.setImageUrls(list.size());
     }
 </pre></code>
 XML中：
-
-<code><pre>
+```
 <com.wenen.gridimageview.GridImageView
       android:id="@+id/images"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      />
-</pre></code>
+/>
+```
+
+
+
 
 
 
