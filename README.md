@@ -21,6 +21,9 @@ ImageView[] imageViews = relativeLayout.setImageUrls(list.size());
       Glide.with(this).load(list.get(i)).into(imageViews[i]);
     }
 </pre></code>
+
+因为返回的是一个ImageView数组，所以你也可以对这个数组进行循环，做你想做的任何事情，包括给ImageView添加动画、点击监听等。
+
 XML中：
 ```
 <com.wenen.gridimageview.GridImageView
