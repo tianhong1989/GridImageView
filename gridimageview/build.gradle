@@ -19,7 +19,29 @@ android {
     }
   }
 }
-
+//ext {
+//  bintrayRepo = 'GridImageView'
+//  bintrayName = 'GridImageView'
+//
+//  publishedGroupId = 'com.wenen'
+//  libraryName = 'GridImageView'
+//  artifact = 'gridimageview'
+//
+//  libraryDescription = 'GridImageView for Android'
+//
+//  siteUrl = 'https://github.com/A-W-C-J/GridImageView'
+//  gitUrl = 'https://github.com/A-W-C-J/GridImageView.git'
+//
+//  libraryVersion = '1.0.1'
+//
+//  developerId = 'wenen'
+//  developerName = 'wenen'
+//  developerEmail = 'wmj141519@gmail.com'
+//
+//  licenseName = 'The Apache Software License, Version 2.0'
+//  licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//  allLicenses = ["Apache-2.0"]
+//}
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
   androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -28,3 +50,6 @@ dependencies {
   compile 'com.android.support:appcompat-v7:25.0.1'
   testCompile 'junit:junit:4.12'
 }
+apply from: '../bintray.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'

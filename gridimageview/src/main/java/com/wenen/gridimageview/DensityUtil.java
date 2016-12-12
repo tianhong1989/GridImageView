@@ -2,28 +2,18 @@ package com.wenen.gridimageview;
 
 import android.content.Context;
 
-//这个类用来实现不同坐标单位的转换
 public class DensityUtil {
-
-	/**
-	 * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
-	 */
 	public static int dip2px(Context context, float dpValue) {
 		final float scale = context.getResources().getDisplayMetrics().density;
 		return (int) (dpValue * scale + 0.5f);
 	}
 
-	/**
-	 * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
-	 */
 	public static int px2dip(Context context, float pxValue) {
 		final float scale = context.getResources().getDisplayMetrics().density;
 		return (int) (pxValue / scale + 0.5f);
 	}
 
 	/**
-	 * 将px值转换为sp值，保证文字大小不变
-	 * 
 	 * @param pxValue
 	 * @return
 	 */
@@ -33,8 +23,6 @@ public class DensityUtil {
 	}
 
 	/**
-	 * 将sp值转换为px值，保证文字大小不变
-	 * 
 	 * @param spValue
 	 * @return
 	 */
