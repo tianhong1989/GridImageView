@@ -1,13 +1,11 @@
 ## GridImageView
 
-[中文说明](/ChineseReadMe.md)
-
 <img src="https://img.shields.io/badge/build-passing-green.svg"/>
 <img src="https://img.shields.io/badge/release-1.0.5-yellow.svg"/>
 
 [<img src="https://img.shields.io/badge/made%20by-Wenen-blue.svg"/>](http://wenen.site/)
 
-Provide a grid ImageView, according to the image of the incoming address automatically load. Unlimited image loading frame, you can switch to any one of the ways you like.
+提供一个网格图片控件，可以根据图片数量自动适配加载，当只有一张图片时，自适应当前控件大小。采用接口的方式加载图片以及给每张图片设置监听事件，因此，可以无缝切换至任何一种你喜欢的图片加载方式。控件内置一个ZoomAnimation,用于图片的点击放大
 
 <img src="/img/ezgif.com-gif-maker.gif"/>
 
@@ -18,7 +16,7 @@ Provide a grid ImageView, according to the image of the incoming address automat
 compile 'com.wenen:gridimageview:1.0.5'
 </pre></code>
 
-#### 1. implements the callback in the Activity：
+#### 1. Activity必须实现LoadImageCallBack接口，用于加载图片以及设置监听：
 <pre>
 public class MainActivity extends AppCompatActivity implements LoadImageCallBack{
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -27,17 +25,17 @@ public class MainActivity extends AppCompatActivity implements LoadImageCallBack
   }
 }
 </pre>
-#### 2. get the view:
+#### 2. 先获取控件:
 <pre>
 gridImageView = (GridImageView) findViewById(R.id.images);
 </pre>
 
-#### 3. set the list of ImageUrl
+#### 3. 将图片地址的list以及LoadImageCallBack的具体实现传递给GridImageView：
 <pre>
 gridImageView.setImage(list, this);
 </pre>
 
-#### 4. Override the callback to load image and add a listener
+#### 4. 重写LoadImageCallBack的方法：
 <pre>
 @Override
   public void loadImage(ImageView imageView, String url) {
@@ -57,7 +55,7 @@ gridImageView.setImage(list, this);
       android:layout_height="wrap_content"
 />
 ```
-#### Load image in the Activity and set a zoom animation：
+#### 给每个图片设置事件：
 <code><pre>
   @Override
   public void onClickResponse(ImageView view, String url) {
@@ -67,7 +65,7 @@ gridImageView.setImage(list, this);
   }
 </pre></code>
 
-#### XML（tips：if you want to set a zoom animation,the xml root must be FrameLayout）：
+#### XML（如果你想要给每个图片使用内置的Zoom效果，XML的根布局必须为FrameLayout）：
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"

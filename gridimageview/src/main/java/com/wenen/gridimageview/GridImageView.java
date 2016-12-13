@@ -247,9 +247,9 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
       @Override public void onAnimationEnd(Animator animation) {
         mCurrentAnimator = null;
       }
-
       @Override public void onAnimationCancel(Animator animation) {
         mCurrentAnimator = null;
+        thumbView.setAlpha(1f);
       }
     });
     set.start();
