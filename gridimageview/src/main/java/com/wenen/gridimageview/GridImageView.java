@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -20,12 +21,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2016/12/9.
  */
 
-public class GridImageView extends ScrollView {
+public class GridImageView extends ScrollView implements View.OnClickListener {
   public static int screenWidth;
   public static int screenHeight;
   public static int densityDpi;
@@ -43,7 +45,8 @@ public class GridImageView extends ScrollView {
   private RelativeLayout relativeLayout;
   private RelativeLayout.LayoutParams params;
   private Animator mCurrentAnimator;
-  private boolean expand = false;
+  private LoadImageCallBack myLoadImageCallBack;
+  private ArrayList<String> listUrl;
   /**
    * The system "short" animation time duration, in milliseconds. This duration is ideal for
    * subtle animations or animations that occur very frequently.
@@ -52,10 +55,6 @@ public class GridImageView extends ScrollView {
 
   public GridImageView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    TypedArray a =
-        context.obtainStyledAttributes(attrs, R.styleable.GridImageView, defStyleAttr, 0);
-    expand = a.getBoolean(R.styleable.GridImageView_giv_expand, expand);
-    a.recycle();
     init();
   }
 
@@ -109,6 +108,7 @@ public class GridImageView extends ScrollView {
 
   @Override protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
+    this.setVerticalScrollBarEnabled(false);
     setLayout();
   }
 
@@ -120,52 +120,61 @@ public class GridImageView extends ScrollView {
       relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(width, realWidth * clucount));
     }
     if (height > realWidth * clucount && realWidth * clucount > 0) {
-      ViewGroup.LayoutParams params=this.getLayoutParams();
-      params.height= realWidth * clucount + margin * clucount;
+      ViewGroup.LayoutParams params = this.getLayoutParams();
+      params.height = realWidth * clucount + margin * clucount;
       this.requestLayout();
     }
     if (relativeLayout.getParent() == null) {
       this.addView(relativeLayout);
     }
-    for (int i = 1; i <= length; i++) {
+    //  if (length > 9) {
+    for (int i = 0; i < length; i++) {
       params = new RelativeLayout.LayoutParams(realWidth, realWidth);
       params.setMargins(margin, margin, 0, 0);
-      params.addRule(RelativeLayout.BELOW, i - rowcount);
-      if ((i - 1) % rowcount == 0) {
+      params.addRule(RelativeLayout.BELOW, i + 1 - rowcount);
+      if (i % rowcount == 0) {
         params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
       } else {
-        params.addRule(RelativeLayout.RIGHT_OF, i - 1);
+        params.addRule(RelativeLayout.RIGHT_OF, i);
       }
       if (imageViews != null) {
-        if (imageViews[i - 1].getParent() == null) {
-          relativeLayout.addView(imageViews[i - 1], i - 1, params);
+        if (imageViews[i].getParent() == null) {
+          relativeLayout.addView(imageViews[i], i, params);
         }
       }
+      //  if (i == 8) {
+      //    TextView textView = new TextView(getContext());
+      //    textView.setTextSize(DensityUtil.px2sp(getContext(), realWidth / 2));
+      //    textView.setTextColor(getResources().getColor(R.color.textColor));
+      //    textView.setText(length - 9 + ">>");
+      //    relativeLayout.addView(textView, i, params);
+      //  }
+      //}
     }
   }
 
-  public ImageView[] setImageCount(int length) {
-    this.length = length;
+  public void setImage(ArrayList<String> list, LoadImageCallBack loadImageCallBack) {
+    this.myLoadImageCallBack = loadImageCallBack;
+    this.length = list.size();
+    this.listUrl=list;
     imageViews = new ImageView[length];
     for (int i = 0; i < length; i++) {
       imageViews[i] = new ImageView(getContext());
       imageViews[i].setId(i + 1);
       imageViews[i].setScaleType(ImageView.ScaleType.CENTER_CROP);
+      myLoadImageCallBack.loadImage(imageViews[i], list.get(i));
+      imageViews[i].setOnClickListener(this);
     }
     margin =
-        (screenWidth - 4 * (DensityUtil.dip2px(getContext(), 80)) - DensityUtil.dip2px(getContext(),
+        (screenWidth - 4 * (DensityUtil.dip2px(getContext(), 90)) - DensityUtil.dip2px(getContext(),
             8)) / 8;
-    if (length <= 4 && length > 1) {
-      rowcount = 2;
-      clucount = length / 2 + length % 2;
-    } else if (length > 4) {
+    if (length > 1) {
       rowcount = 3;
       clucount = length / 3 + length % 3;
     } else {
       rowcount = 1;
       clucount = 1;
     }
-    return imageViews;
   }
 
   public void zoomImageFromThumb(final View thumbView, final ImageView expandedImageView,
@@ -282,5 +291,9 @@ public class GridImageView extends ScrollView {
         mCurrentAnimator = set;
       }
     });
+  }
+
+  @Override public void onClick(View view) {
+    myLoadImageCallBack.onClickResponse(imageViews[view.getId()-1],listUrl.get(view.getId()-1));
   }
 }

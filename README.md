@@ -1,9 +1,7 @@
 ## GridImageView
 
-[中文文档](/ChineseReadMe.md)
-
 <img src="https://img.shields.io/badge/build-passing-green.svg"/>
-<img src="https://img.shields.io/badge/release-1.0.3-yellow.svg"/>
+<img src="https://img.shields.io/badge/release-1.0.4-yellow.svg"/>
 
 [<img src="https://img.shields.io/badge/made%20by-Wenen-blue.svg"/>](http://wenen.site/)
 
@@ -15,19 +13,41 @@ Provide a grid ImageView, according to the image of the incoming address automat
 ## usage
 
 <code><pre>
-compile 'com.wenen:gridimageview:1.0.3'
+compile 'com.wenen:gridimageview:1.0.4'
 </pre></code>
 
-Load image in the Activity：
-<code><pre>
-GridImageView relativeLayout = (GridImageView) findViewById(R.id.images);
-ImageView[] imageViews = relativeLayout.setImageCount(list.size());
-    for (int i = 0; i < imageViews.length; i++) {
-      Glide.with(this).load(list.get(i)).into(imageViews[i]);
-    }
-</pre></code>
+#### 1. implements the callback in the Activity：
+<pre>
+public class MainActivity extends AppCompatActivity implements LoadImageCallBack{
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+  }
+}
+</pre>
+#### 2. get the view:
+<pre>
+gridImageView = (GridImageView) findViewById(R.id.images);
+</pre>
 
-XML：
+#### 3. set the list of ImageUrl
+<pre>
+gridImageView.setImage(list, this);
+</pre>
+
+#### 4. Override the callback to load image and add a listener
+<pre>
+@Override
+  public void loadImage(ImageView imageView, String url) {
+    //load your image
+  }
+  @Override
+  public void onClickResponse(ImageView view, String url) {
+    //add the ClickListener of your ImageView
+  }
+</pre>
+
+#### XML：
 ```
 <com.wenen.gridimageview.GridImageView
       android:id="@+id/images"
@@ -35,23 +55,17 @@ XML：
       android:layout_height="wrap_content"
 />
 ```
-Load image in the Activity and set a zoom animation：
+#### Load image in the Activity and set a zoom animation：
 <code><pre>
-ImageView[] imageViews = relativeLayout.setImageCount(list.size());
-    for (int i = 0; i < imageViews.length; i++) {
-      Glide.with(this).load(list.get(i)).into(imageViews[i]);
-      final int finalI = i;
-      imageViews[i].setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View view) {
-          Glide.with(MainActivity.this).load(list.get(finalI)).into(imageView);
-          relativeLayout.zoomImageFromThumb(view,imageView,
-              (FrameLayout) findViewById(R.id.activity_main));
-        }
-      });
-    }
+  @Override
+  public void onClickResponse(ImageView view, String url) {
+    Glide.with(MainActivity.this).load(url).into(imageView);
+    gridImageView.zoomImageFromThumb(view, imageView,
+        (FrameLayout) findViewById(R.id.activity_main));
+  }
 </pre></code>
 
-XML（tips：if you want to set a zoom animation,the xml root must be FrameLayout）：
+#### XML（tips：if you want to set a zoom animation,the xml root must be FrameLayout）：
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
