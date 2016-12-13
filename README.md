@@ -7,7 +7,8 @@
 
 提供一个类似于微信朋友圈、 QQ空间的九宫格控件，根据传入的图片地址或者文字自动适配加载。不限定图片加载框架，可切换至任意一种你喜欢的方式。
 
-<img src="ezgif.com-gif-maker.gif"/>
+<img src="/img/ezgif.com-gif-maker.gif"/>
+
 
 ## 用法
 
