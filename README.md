@@ -1,5 +1,10 @@
 ## GridImageView
 
+<img src="https://img.shields.io/badge/build-passing-green.svg"/>
+<img src="https://img.shields.io/badge/release-1.0.2-yellow.svg"/>
+
+[<img src="https://img.shields.io/badge/made%20by-Wenen-blue.svg"/>](http://wenen.site/)
+
 提供一个类似于微信朋友圈、 QQ空间的九宫格控件，根据传入的图片地址或者文字自动适配加载。不限定图片加载框架，可切换至任意一种你喜欢的方式。
 
 <img src="/img/device-2016-12-12-142146.png" width="30%"/>
