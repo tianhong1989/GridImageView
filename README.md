@@ -1,7 +1,7 @@
 ## GridImageView
 
 <img src="https://img.shields.io/badge/build-passing-green.svg"/>
-<img src="https://img.shields.io/badge/release-1.0.2-yellow.svg"/>
+<img src="https://img.shields.io/badge/release-1.0.3-yellow.svg"/>
 
 [<img src="https://img.shields.io/badge/made%20by-Wenen-blue.svg"/>](http://wenen.site/)
 
@@ -13,7 +13,7 @@
 ## 用法
 
 <code><pre>
-compile 'com.wenen:gridimageview:1.0.2'
+compile 'com.wenen:gridimageview:1.0.3'
 </pre></code>
 
 Activity中设置图片：
