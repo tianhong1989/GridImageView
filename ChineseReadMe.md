@@ -1,6 +1,6 @@
 ## GridImageView
 
-<img src="https://img.shields.io/badge/release-1.0.6-yellow.svg"/>
+<img src="https://img.shields.io/badge/release-1.0.7-yellow.svg"/>
 
 [<img src="https://img.shields.io/badge/made%20by-Wenen-blue.svg"/>](http://wenen.site/)
 
@@ -12,7 +12,7 @@
 ## usage
 
 <code><pre>
-compile 'com.wenen:gridimageview:1.0.6'
+compile 'com.wenen:gridimageview:1.0.7'
 </pre></code>
 
 #### 1. Activity必须实现LoadImageCallBack接口，用于加载图片以及设置监听：
@@ -29,19 +29,19 @@ public class MainActivity extends AppCompatActivity implements LoadImageCallBack
 gridImageView = (GridImageView) findViewById(R.id.images);
 </pre>
 
-#### 3. 将图片地址的list以及LoadImageCallBack的具体实现传递给GridImageView：
+#### 3. 将图片地址的总数以及LoadImageCallBack的具体实现传递给GridImageView：
 <pre>
-gridImageView.setImage(list, this,context);
+gridImageView.setImage(list.size, this,context);
 </pre>
 
 #### 4. 重写LoadImageCallBack的方法：
 <pre>
 @Override
-  public void loadImage(ImageView imageView, String url,int index) {
+  public void loadImage(ImageView imageView, int index) {
     //load your image
   }
   @Override
-  public void onClickResponse(ImageView view, String url,int index) {
+  public void onClickResponse(ImageView view, int index) {
     //add the ClickListener of your ImageView
   }
 </pre>
@@ -57,8 +57,8 @@ gridImageView.setImage(list, this,context);
 #### 给每个图片设置事件：
 <code><pre>
   @Override
-  public void onClickResponse(ImageView view, String url,int index) {
-    Glide.with(MainActivity.this).load(url).into(imageView);
+  public void onClickResponse(ImageView view, int index) {
+    Glide.with(this).load(list.get(index)).into(imageView);
     gridImageView.zoomImageFromThumb(view, imageView,
         (FrameLayout) findViewById(R.id.activity_main));
   }

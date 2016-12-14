@@ -56,16 +56,14 @@ public class MainActivity extends AppCompatActivity implements LoadImageCallBack
     list.add(
         "http://g.hiphotos.baidu.com/zhidao/pic/item/503d269759ee3d6d735fb9cf40166d224f4ade1c.jpg");
     list.add("http://imgsrc.baidu.com/forum/pic/item/d4c907f3d7ca7bcbb5c421cabe096b63f424a8e4.jpg");
-    gridImageView.setImage(list, this, getApplicationContext());
-    MyApplication.getRefWatcher(getApplicationContext()).watch(gridImageView, "gridImageView溢出");
-    MyApplication.getRefWatcher(getApplicationContext()).watch(list, "list溢出");
+    gridImageView.setImage(list.size(), this, getApplicationContext());
   }
-  @Override public void loadImage(ImageView imageView, String url, int index) {
-    Glide.with(this).load(url).into(imageView);
+  @Override public void loadImage(ImageView imageView, int index) {
+    Glide.with(this).load(list.get(index)).into(imageView);
   }
-  @Override public void onClickResponse(ImageView view, String url, int index) {
-    Glide.with(MainActivity.this).load(url).into(imageView);
-    gridImageView.zoomImageFromThumb(view, imageView,
+  @Override public void onClickResponse(ImageView thumbView, int index) {
+    Glide.with(this).load(list.get(index)).crossFade().into(imageView);
+    gridImageView.zoomImageFromThumb(thumbView, imageView,
         (FrameLayout) findViewById(R.id.activity_main));
     Log.e(TAG, "onClickResponse: "+index);
   }
