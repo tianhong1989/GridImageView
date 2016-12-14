@@ -1,6 +1,5 @@
 ## GridImageView
 
-<img src="https://img.shields.io/badge/build-passing-green.svg"/>
 <img src="https://img.shields.io/badge/release-1.0.6-yellow.svg"/>
 
 [<img src="https://img.shields.io/badge/made%20by-Wenen-blue.svg"/>](http://wenen.site/)

@@ -65,18 +65,15 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
     super(context);
     init();
   }
-
   public GridImageView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init();
   }
-
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public GridImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
     init();
   }
-
   private void init() {
     screenWidth = getResources().getDisplayMetrics().widthPixels;
     screenHeight = getResources().getDisplayMetrics().heightPixels;
@@ -186,8 +183,6 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
       imageViewWeakReference.clear();
       imageViewWeakReference = new WeakReference<>(expandedImageView);
     }
-
-
     // If there's an animation in progress, cancel it
     // immediately and proceed with this one.
     if (mCurrentAnimator != null) {
@@ -294,7 +289,6 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
             thumbViewWeakReference.get().setAlpha(1f);
             imageViewWeakReference.get().setVisibility(View.GONE);
             mCurrentAnimator = null;
-
           }
 
           @Override public void onAnimationCancel(Animator animation) {

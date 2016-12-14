@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements LoadImageCallBack
   }
   @Override public void onClickResponse(ImageView view, String url, int index) {
     Glide.with(MainActivity.this).load(url).into(imageView);
-
     gridImageView.zoomImageFromThumb(view, imageView,
         (FrameLayout) findViewById(R.id.activity_main));
     Log.e(TAG, "onClickResponse: "+index);
