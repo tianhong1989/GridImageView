@@ -3,7 +3,7 @@
 [中文说明](/ChineseReadMe.md)
 
 <img src="https://img.shields.io/badge/build-passing-green.svg"/>
-<img src="https://img.shields.io/badge/release-1.0.5-yellow.svg"/>
+<img src="https://img.shields.io/badge/release-1.0.6-yellow.svg"/>
 
 [<img src="https://img.shields.io/badge/made%20by-Wenen-blue.svg"/>](http://wenen.site/)
 
@@ -15,7 +15,7 @@ Provide a grid ImageView, according to the image of the incoming address automat
 ## usage
 
 <code><pre>
-compile 'com.wenen:gridimageview:1.0.5'
+compile 'com.wenen:gridimageview:1.0.6'
 </pre></code>
 
 #### 1. implements the callback in the Activity：
@@ -34,17 +34,17 @@ gridImageView = (GridImageView) findViewById(R.id.images);
 
 #### 3. set the list of ImageUrl
 <pre>
-gridImageView.setImage(list, this);
+gridImageView.setImage(list, this,context);
 </pre>
 
 #### 4. Override the callback to load image and add a listener
 <pre>
 @Override
-  public void loadImage(ImageView imageView, String url) {
+  public void loadImage(ImageView imageView, String url,int index) {
     //load your image
   }
   @Override
-  public void onClickResponse(ImageView view, String url) {
+  public void onClickResponse(ImageView view, String url,int index) {
     //add the ClickListener of your ImageView
   }
 </pre>
@@ -60,7 +60,7 @@ gridImageView.setImage(list, this);
 #### Load image in the Activity and set a zoom animation：
 <code><pre>
   @Override
-  public void onClickResponse(ImageView view, String url) {
+  public void onClickResponse(ImageView view, String url,int index) {
     Glide.with(MainActivity.this).load(url).into(imageView);
     gridImageView.zoomImageFromThumb(view, imageView,
         (FrameLayout) findViewById(R.id.activity_main));

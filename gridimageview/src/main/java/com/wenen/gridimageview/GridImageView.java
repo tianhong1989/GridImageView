@@ -5,9 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -21,12 +19,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2016/12/9.
  */
-
 public class GridImageView extends ScrollView implements View.OnClickListener {
   public static int screenWidth;
   public static int screenHeight;
@@ -40,13 +38,18 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
   private int rowcount;
   private int clucount;
   private ImageView[] imageViews;
-  private int margin;
   private int length;
+  private int margin;
   private RelativeLayout relativeLayout;
   private RelativeLayout.LayoutParams params;
   private Animator mCurrentAnimator;
-  private LoadImageCallBack myLoadImageCallBack;
-  private ArrayList<String> listUrl;
+  private WeakReference<LoadImageCallBack> loadImageCallBackWeakReference;
+  private WeakReference<ArrayList<String>> listWeakReference;
+  private Context context;
+  private WeakReference<View> thumbViewWeakReference;
+  private WeakReference<ImageView> imageViewWeakReference;
+  private WeakReference<AnimatorSet> setWeakReference;
+  private WeakReference<AnimatorSet> animatorSetWeakReference;
   /**
    * The system "short" animation time duration, in milliseconds. This duration is ideal for
    * subtle animations or animations that occur very frequently.
@@ -115,7 +118,7 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
   private void setLayout() {
     int realWidth = (width - 4 * margin) / rowcount;
     if (relativeLayout == null) {
-      relativeLayout = new RelativeLayout(getContext());
+      relativeLayout = new RelativeLayout(context);
       Log.e(TAG, "setLayout: " + realWidth * clucount);
       relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(width, realWidth * clucount));
     }
@@ -127,7 +130,6 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
     if (relativeLayout.getParent() == null) {
       this.addView(relativeLayout);
     }
-    //  if (length > 9) {
     for (int i = 0; i < length; i++) {
       params = new RelativeLayout.LayoutParams(realWidth, realWidth);
       params.setMargins(margin, margin, 0, 0);
@@ -142,32 +144,25 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
           relativeLayout.addView(imageViews[i], i, params);
         }
       }
-      //  if (i == 8) {
-      //    TextView textView = new TextView(getContext());
-      //    textView.setTextSize(DensityUtil.px2sp(getContext(), realWidth / 2));
-      //    textView.setTextColor(getResources().getColor(R.color.textColor));
-      //    textView.setText(length - 9 + ">>");
-      //    relativeLayout.addView(textView, i, params);
-      //  }
-      //}
     }
   }
-
-  public void setImage(ArrayList<String> list, LoadImageCallBack loadImageCallBack) {
-    this.myLoadImageCallBack = loadImageCallBack;
-    this.length = list.size();
-    this.listUrl=list;
+  public void setImage(ArrayList<String> list, LoadImageCallBack loadImageCallBack,
+      Context context) {
+    loadImageCallBackWeakReference = new WeakReference<>(loadImageCallBack);
+    listWeakReference = new WeakReference<>(list);
+    this.length = listWeakReference.get().size();
+    this.context = context;
     imageViews = new ImageView[length];
     for (int i = 0; i < length; i++) {
-      imageViews[i] = new ImageView(getContext());
+      imageViews[i] = new ImageView(context);
       imageViews[i].setId(i + 1);
       imageViews[i].setScaleType(ImageView.ScaleType.CENTER_CROP);
-      myLoadImageCallBack.loadImage(imageViews[i], list.get(i));
+      loadImageCallBackWeakReference.get()
+          .loadImage(imageViews[i], listWeakReference.get().get(i), i);
       imageViews[i].setOnClickListener(this);
     }
     margin =
-        (screenWidth - 4 * (DensityUtil.dip2px(getContext(), 90)) - DensityUtil.dip2px(getContext(),
-            8)) / 8;
+        (screenWidth - 4 * (DensityUtil.dip2px(context, 90)) - DensityUtil.dip2px(context, 8)) / 8;
     if (length > 1) {
       rowcount = 3;
       clucount = length / 3 + length % 3;
@@ -177,12 +172,27 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
     }
   }
 
-  public void zoomImageFromThumb(final View thumbView, final ImageView expandedImageView,
+  public void zoomImageFromThumb(View thumbView, ImageView expandedImageView,
       FrameLayout frameLayout) {
+    if (thumbViewWeakReference==null){
+      thumbViewWeakReference = new WeakReference<>(thumbView);
+    }else {
+      thumbViewWeakReference.clear();
+      thumbViewWeakReference = new WeakReference<>(thumbView);
+    }
+    if (imageViewWeakReference==null){
+      imageViewWeakReference = new WeakReference<>(expandedImageView);
+    }else {
+      imageViewWeakReference.clear();
+      imageViewWeakReference = new WeakReference<>(expandedImageView);
+    }
+
+
     // If there's an animation in progress, cancel it
     // immediately and proceed with this one.
     if (mCurrentAnimator != null) {
       mCurrentAnimator.cancel();
+      thumbViewWeakReference.get().setAlpha(1.0f);
     }
     // Calculate the starting and ending bounds for the zoomed-in image.
     // This step involves lots of math. Yay, math.
@@ -195,7 +205,7 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
     // view. Also set the container view's offset as the origin for the
     // bounds, since that's the origin for the positioning animation
     // properties (X, Y).
-    thumbView.getGlobalVisibleRect(startBounds);
+    thumbViewWeakReference.get().getGlobalVisibleRect(startBounds);
     frameLayout.getGlobalVisibleRect(finalBounds, globalOffset);
     startBounds.offset(-globalOffset.x, -globalOffset.y);
     finalBounds.offset(-globalOffset.x, -globalOffset.y);
@@ -225,75 +235,82 @@ public class GridImageView extends ScrollView implements View.OnClickListener {
     // Hide the thumbnail and show the zoomed-in view. When the animation
     // begins, it will position the zoomed-in view in the place of the
     // thumbnail.
-    thumbView.setAlpha(0f);
-    expandedImageView.setVisibility(View.VISIBLE);
+    thumbViewWeakReference.get().setAlpha(0f);
+    imageViewWeakReference.get().setVisibility(View.VISIBLE);
 
     // Set the pivot point for SCALE_X and SCALE_Y transformations
     // to the top-left corner of the zoomed-in view (the default
     // is the center of the view).
-    expandedImageView.setPivotX(0f);
-    expandedImageView.setPivotY(0f);
+    imageViewWeakReference.get().setPivotX(0f);
+    imageViewWeakReference.get().setPivotY(0f);
 
     // Construct and run the parallel animation of the four translation and
     // scale properties (X, Y, SCALE_X, and SCALE_Y).
-    AnimatorSet set = new AnimatorSet();
-    set.play(ObjectAnimator.ofFloat(expandedImageView, View.X, startBounds.left, finalBounds.left))
-        .with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top, finalBounds.top))
-        .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_X, startScale, 1f))
-        .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_Y, startScale, 1f));
-    set.setDuration(mShortAnimationDuration);
-    set.setInterpolator(new DecelerateInterpolator());
-    set.addListener(new AnimatorListenerAdapter() {
+    setWeakReference=new WeakReference<>(new AnimatorSet());
+    setWeakReference.get().play(ObjectAnimator.ofFloat(imageViewWeakReference.get(), View.X, startBounds.left,
+        finalBounds.left))
+        .with(ObjectAnimator.ofFloat(imageViewWeakReference.get(), View.Y, startBounds.top,
+            finalBounds.top))
+        .with(ObjectAnimator.ofFloat(imageViewWeakReference.get(), View.SCALE_X, startScale, 1f))
+        .with(ObjectAnimator.ofFloat(imageViewWeakReference.get(), View.SCALE_Y, startScale, 1f));
+    setWeakReference.get().setDuration(mShortAnimationDuration);
+    setWeakReference.get().setInterpolator(new DecelerateInterpolator());
+    setWeakReference.get().addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
         mCurrentAnimator = null;
+
       }
+
       @Override public void onAnimationCancel(Animator animation) {
         mCurrentAnimator = null;
-        thumbView.setAlpha(1f);
+        thumbViewWeakReference.get().setAlpha(1f);
+
       }
     });
-    set.start();
-    mCurrentAnimator = set;
-
+    setWeakReference.get().start();
+    mCurrentAnimator = setWeakReference.get();
     // Upon clicking the zoomed-in image, it should zoom back down
     // to the original bounds and show the thumbnail instead of
     // the expanded image.
     final float startScaleFinal = startScale;
-    expandedImageView.setOnClickListener(new View.OnClickListener() {
+    imageViewWeakReference.get().setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
         if (mCurrentAnimator != null) {
           mCurrentAnimator.cancel();
         }
-
         // Animate the four positioning/sizing properties in parallel,
         // back to their original values.
-        AnimatorSet set = new AnimatorSet();
-        set.play(ObjectAnimator.ofFloat(expandedImageView, View.X, startBounds.left))
-            .with(ObjectAnimator.ofFloat(expandedImageView, View.Y, startBounds.top))
-            .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_X, startScaleFinal))
-            .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_Y, startScaleFinal));
-        set.setDuration(mShortAnimationDuration);
-        set.setInterpolator(new DecelerateInterpolator());
-        set.addListener(new AnimatorListenerAdapter() {
+        animatorSetWeakReference = new WeakReference<>(new AnimatorSet());
+        animatorSetWeakReference.get().play(ObjectAnimator.ofFloat(imageViewWeakReference.get(), View.X, startBounds.left))
+            .with(ObjectAnimator.ofFloat(imageViewWeakReference.get(), View.Y, startBounds.top))
+            .with(
+                ObjectAnimator.ofFloat(imageViewWeakReference.get(), View.SCALE_X, startScaleFinal))
+            .with(ObjectAnimator.ofFloat(imageViewWeakReference.get(), View.SCALE_Y,
+                startScaleFinal));
+        animatorSetWeakReference.get().setDuration(mShortAnimationDuration);
+        animatorSetWeakReference.get().setInterpolator(new DecelerateInterpolator());
+        animatorSetWeakReference.get().addListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
-            thumbView.setAlpha(1f);
-            expandedImageView.setVisibility(View.GONE);
+            thumbViewWeakReference.get().setAlpha(1f);
+            imageViewWeakReference.get().setVisibility(View.GONE);
             mCurrentAnimator = null;
+
           }
 
           @Override public void onAnimationCancel(Animator animation) {
-            thumbView.setAlpha(1f);
-            expandedImageView.setVisibility(View.GONE);
+            thumbViewWeakReference.get().setAlpha(1f);
+            imageViewWeakReference.get().setVisibility(View.GONE);
             mCurrentAnimator = null;
           }
         });
-        set.start();
-        mCurrentAnimator = set;
+        animatorSetWeakReference.get().start();
+        mCurrentAnimator = animatorSetWeakReference.get();
       }
     });
   }
-
   @Override public void onClick(View view) {
-    myLoadImageCallBack.onClickResponse(imageViews[view.getId()-1],listUrl.get(view.getId()-1));
+    loadImageCallBackWeakReference.get()
+        .onClickResponse(imageViews[view.getId() - 1],
+            listWeakReference.get().get(view.getId() - 1), view.getId() - 1);
   }
 }

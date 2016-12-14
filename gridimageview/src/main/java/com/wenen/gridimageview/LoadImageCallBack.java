@@ -7,6 +7,6 @@ import android.widget.ImageView;
  */
 
 public interface LoadImageCallBack {
-  void loadImage(ImageView imageView,String url);
-  void onClickResponse(ImageView imageView,String url);
+  void loadImage(ImageView imageView,String url,int index);
+  void onClickResponse(ImageView imageView,String url,int index);
 }
